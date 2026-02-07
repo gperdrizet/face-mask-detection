@@ -13,8 +13,8 @@
 		"--ipc=host",                 // Connect to host interprocess namespace
 		"--ulimit", "memlock=-1",     // Turn of memory lock limit
 		"--ulimit", "stack=67108864", // Increase process stack limit to 64 MB
-		"--publish", "6006:6006",     // Map TensorBoard port for easy access
-		"--publish", "8080:8080",     // Map Optuna port for easy access
+		// "--publish", "6006:6006",     // Map TensorBoard port for easy access
+		// "--publish", "8080:8080",     // Map Optuna port for easy access
 		"--network=bridge"            // Explicitly use bridge network for internet access
 	],
 	"remoteUser": "vscode",           // Use the 'vscode' user provided by the base image
@@ -44,7 +44,8 @@
 			],
 			
 			// Disable automatic port forwarding to give explicit control
-			"remote.restoreForwardedPorts": false,
+			"remote.autoForwardPorts": false,
+			"remote.restoreForwardedPorts": false
 
 		},
 
@@ -66,8 +67,11 @@
 	"onCreateCommand": "",
 
 	// Use 'postCreateCommand' to run commands once after the container is created
-	"postCreateCommand": "mkdir -p logs && mkdir -p models && mkdir -p data",
+	"postCreateCommand": "mkdir -p models && mkdir -p data && pip install -r requirements.txt",
 
-	// Use 'postAttachCommand' to run TensorBoard
-	"postAttachCommand": "pip install -r requirements.txt"
+	// Use 'postAttachCommand' to run commands each time the container is started or attached to
+	"postAttachCommand": ""
+
+	// Forward port 8501 for Streamlit app
+	,"forwardPorts": [8501]
 }
