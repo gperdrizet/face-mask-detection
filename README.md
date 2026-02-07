@@ -2,14 +2,17 @@
 
 A deep learning project for detecting face masks in images using a PyTorch CNN model, with a simple Streamlit web application for deployment.
 
+## Web application
+
+A simple Streamlit app for real-time face mask detection with:
+
+- **Image upload**: Upload JPG, JPEG, or PNG images
+- **Webcam capture**: Take photos directly with your camera
+- **Real-time inference**: Get instant mask detection results
+- **Probability display**: Shows mask detection probability (0.0 - 1.0)
+- **CPU-only**: Runs on CPU, no GPU required
+
 Try live deployment of app [here](https://mask-detector-puv1.onrender.com)
-
-## Project structure
-
-- `notebooks/` - Jupyter notebook for model training and evaluation
-- `app/` - Streamlit web application for inference
-- `data/` - Training data (with_mask / without_mask)
-- `models/` - Trained model checkpoints
 
 ## Model
 
@@ -18,7 +21,11 @@ Try live deployment of app [here](https://mask-detector-puv1.onrender.com)
 - **Output**: Binary classification (with_mask / without_mask)
 - **Training**: PyTorch 2.0+ with data augmentation
 
-## Getting started
+## Model performance
+
+See the notebook [face_mask_detection.ipynb](https://github.com/gperdrizet/face-mask-detection/blob/main/notebooks/face_mask_detection.ipynb) for full model architecture, training and evaluation details.
+
+## Running the project yourself
 
 ### Using the dev container (recommended)
 
@@ -51,18 +58,6 @@ pip install -r requirements.txt
 streamlit run streamlit_app.py
 ```
 
-## Web application
-
-A simple Streamlit app for real-time face mask detection.
-
-### Features
-
-- **Image Upload**: Upload JPG, JPEG, or PNG images
-- **Webcam Capture**: Take photos directly with your camera
-- **Real-time Inference**: Get instant mask detection results
-- **Probability Display**: Shows mask detection probability (0.0 - 1.0)
-- **CPU-only**: Runs on CPU, no GPU required
-
 ### Usage
 
 The app will open in your default browser at `http://localhost:8501`.
@@ -73,16 +68,6 @@ The app will open in your default browser at `http://localhost:8501`.
    - The input image (fixed 600px width)
    - Mask detection probability
    - Visual indicator (Mask detected / No mask detected)
-
-## Error handling
-
-The app includes comprehensive error handling for:
-- Model loading failures
-- Invalid image formats
-- Image processing errors
-- Inference errors
-
-All errors are displayed to the user with helpful messages.
 
 ## License
 
