@@ -1,4 +1,6 @@
-# Face Mask Detection
+# Face mask detection
+
+Try live deployment of app [here](https://mask-detector-puv1.onrender.com)
 
 A deep learning project for detecting face masks in images using a PyTorch CNN model, with a simple Streamlit web application for deployment.
 
@@ -11,8 +13,6 @@ A simple Streamlit app for real-time face mask detection with:
 - **Real-time inference**: Get instant mask detection results
 - **Probability display**: Shows mask detection probability (0.0 - 1.0)
 - **CPU-only**: Runs on CPU, no GPU required
-
-Try live deployment of app [here](https://mask-detector-puv1.onrender.com)
 
 ## Model
 
