@@ -2,6 +2,8 @@
 
 A deep learning project for detecting face masks in images using a PyTorch CNN model, with a simple Streamlit web application for deployment.
 
+Try live deployment of app [here](https://mask-detector-puv1.onrender.com)
+
 ## Project structure
 
 - `notebooks/` - Jupyter notebook for model training and evaluation
@@ -26,6 +28,7 @@ This project includes a dev container configuration with all dependencies pre-in
 2. **Reopen in Container**: VS Code will prompt you to reopen in the container, or use Command Palette → "Dev Containers: Reopen in Container"
 3. **Train the Model**: Open and run all cells in `notebooks/face_mask_detection.ipynb` to train the model and save it to `models/face_mask_detector_production.pth`
 4. **Run the App**: From the `app/` directory, run:
+
 ```bash
 streamlit run streamlit_app.py
 ```
