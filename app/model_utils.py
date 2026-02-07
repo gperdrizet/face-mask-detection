@@ -10,7 +10,7 @@ from PIL import Image
 
 
 def create_model(device):
-    """
+    '''
     Create the face mask detection CNN model.
     
     Args:
@@ -18,8 +18,10 @@ def create_model(device):
         
     Returns:
         model: PyTorch model instance
-    """
+    '''
+
     model = nn.Sequential(
+
         # Conv block: RGB input (3 channels)
         nn.Conv2d(3, 32, kernel_size=3, padding=1),
         nn.BatchNorm2d(32),
@@ -67,13 +69,14 @@ def create_model(device):
         nn.ReLU(),
         nn.Dropout(0.5),
         nn.Linear(128, 2)  # Binary classification: 2 outputs for CrossEntropyLoss
+
     ).to(device)
     
     return model
 
 
 def load_model(model_path, device):
-    """
+    '''
     Load a trained model from checkpoint.
     
     Args:
@@ -83,7 +86,8 @@ def load_model(model_path, device):
     Returns:
         tuple: (model, metadata_dict) where metadata contains class_names, 
                target_size, normalization parameters, etc.
-    """
+    '''
+
     try:
         # Load checkpoint
         checkpoint = torch.load(model_path, map_location=device)
@@ -110,7 +114,7 @@ def load_model(model_path, device):
 
 
 def preprocess_image(image, target_size, normalization_mean, normalization_std):
-    """
+    '''
     Preprocess an image for model inference.
     
     Args:
@@ -121,7 +125,8 @@ def preprocess_image(image, target_size, normalization_mean, normalization_std):
         
     Returns:
         torch.Tensor: Preprocessed image tensor with shape (1, 3, H, W)
-    """
+    '''
+
     # Convert to RGB if needed
     if image.mode != 'RGB':
         image = image.convert('RGB')
@@ -140,7 +145,7 @@ def preprocess_image(image, target_size, normalization_mean, normalization_std):
 
 
 def predict(model, image_tensor, device):
-    """
+    '''
     Run inference on a preprocessed image.
     
     Args:
@@ -150,7 +155,8 @@ def predict(model, image_tensor, device):
         
     Returns:
         float: Probability of mask detection (index 0 = with_mask)
-    """
+    '''
+
     with torch.no_grad():
         # Move tensor to device and run inference
         image_tensor = image_tensor.to(device)
