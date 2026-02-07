@@ -3,22 +3,26 @@ Face Mask Detection Web Application
 A simple Streamlit app for detecting face masks in images.
 '''
 
+# Standard library imports
 import base64
-import io
+import time
 
 from io import BytesIO
 from pathlib import Path
 
+# Third-party imports
 import streamlit as st
 import torch
 from PIL import Image
+
+# Local imports
 from model_utils import load_model, preprocess_image, predict
 
 PATH = Path(__file__).parent.resolve()
 
 # Page configuration
 st.set_page_config(
-    page_title='Mask Detector',
+    page_title='Mask detector',
     page_icon='',
     layout='centered'
 )
@@ -45,56 +49,113 @@ def load_cached_model():
 
 def main():
 
+    # Hide Streamlit header and menu
+    st.markdown(
+        """
+        <style>
+        /* Hide Streamlit header */
+        header[data-testid="stHeader"] {
+            display: none;
+        }
+        
+        /* Hide the main menu button */
+        #MainMenu {
+            visibility: hidden;
+        }
+        
+        /* Hide footer */
+        footer {
+            visibility: hidden;
+        }
+        
+        /* Reduce top padding of main container */
+        .stMainBlockContainer {
+            padding-top: 1rem;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+
     # Title
     st.title('Mask detector')
     
     # Load model (cached)
     model, metadata, device = load_cached_model()
     
-    # Create placeholder for results (will be populated after image is processed)
-    result_placeholder = st.container()
-    
     # Input options
-    st.subheader('Upload an image or use your camera')
+    tab1, tab2 = st.tabs(['Camera', 'Upload file'])
     
-    # File uploader
-    uploaded_file = st.file_uploader(
-        'Choose an image file',
-        type=['jpg', 'jpeg', 'png'],
-        help='Upload a photo to detect mask presence'
-    )
-    
-    # Camera input
-    camera_photo = st.camera_input('Or take a photo with your camera')
-    
-    # Determine which input to use (camera takes precedence)
-    image_source = camera_photo if camera_photo is not None else uploaded_file
-    
-    if image_source is not None:
-        try:
-            # Load image
-            image = Image.open(image_source)
-            
-            # Preprocess image
-            image_tensor = preprocess_image(
-                image,
-                metadata['target_size'],
-                metadata['normalization_mean'],
-                metadata['normalization_std']
-            )
-            
-            # Run inference
-            import time
-            with st.spinner('Analyzing image...'):
-                start_time = time.perf_counter()
-                mask_probability = predict(model, image_tensor, device)
-                inference_time = time.perf_counter() - start_time
-            
-            # Display results in the placeholder (above the upload controls)
-            with result_placeholder:
+    with tab1:
+        # Camera input
+        camera_photo = st.camera_input('Take a photo', label_visibility='collapsed')
+        
+        # Process camera photo
+        if camera_photo is not None:
+            try:
+                # Load image
+                image = Image.open(camera_photo)
                 
-                # Resize image to 200px width for display
-                display_width = 200
+                # Preprocess image
+                image_tensor = preprocess_image(
+                    image,
+                    metadata['target_size'],
+                    metadata['normalization_mean'],
+                    metadata['normalization_std']
+                )
+                
+                # Run inference
+                with st.spinner('Analyzing image...'):
+                    start_time = time.perf_counter()
+                    mask_probability = predict(model, image_tensor, device)
+                    inference_time = time.perf_counter() - start_time
+                
+                st.write('')  # Add spacing
+                
+                # Show result
+                if mask_probability >= 0.5:
+                    st.info(f'Mask detected: P(mask) = {mask_probability:.2f} | Inference time: {inference_time:.2f} s')
+
+                else:
+                    st.info(f'No mask detected: P(mask) = {mask_probability:.2f} | Inference time: {inference_time:.2f} s')
+                    
+            except Exception as e:
+                st.error(f'Error processing image: {str(e)}')
+                st.error('Please try a different image or check the image format.')
+    
+    with tab2:
+
+        # File uploader
+        uploaded_file = st.file_uploader(
+            'Select an image file',
+            label_visibility='collapsed',
+            type=['jpg', 'jpeg', 'png'],
+            help='Upload a photo to detect mask presence'
+        )
+        
+        # Process uploaded file
+        if uploaded_file is not None:
+            try:
+
+                # Load image
+                image = Image.open(uploaded_file)
+                
+                # Preprocess image
+                image_tensor = preprocess_image(
+                    image,
+                    metadata['target_size'],
+                    metadata['normalization_mean'],
+                    metadata['normalization_std']
+                )
+                
+                # Run inference
+                with st.spinner('Analyzing image...'):
+                    start_time = time.perf_counter()
+                    mask_probability = predict(model, image_tensor, device)
+                    inference_time = time.perf_counter() - start_time
+                
+                # Resize image to 300px width for display
+                display_width = 300
                 aspect_ratio = image.height / image.width
                 display_height = int(display_width * aspect_ratio)
                 display_image = image.resize((display_width, display_height), Image.LANCZOS)
@@ -116,29 +177,27 @@ def main():
                         padding: 0;
                     ">
                         <img src="data:image/png;base64,{img_str}" 
-                             style="width: 200px; height: auto; margin: 0; padding: 0; display: block;"
+                             style="width: 300px; height: auto; margin: 0; padding: 0; display: block;"
                              alt="Input image">
                     </div>
                     """,
                     unsafe_allow_html=True
                 )
                 
-                st.write("")  # Add spacing
+                st.write('')  # Add spacing
                 
-                # Show call & predicted probability
+                # Show result
                 if mask_probability >= 0.5:
-                    st.info(f'Mask detected: P(mask) = {mask_probability:.2f} | Inference time: {inference_time*1000:.1f}ms')
-
+                    st.info(f'Mask detected: P(mask) = {mask_probability:.2f} | Inference time: {inference_time:.2f} s')
                 else:
-                    st.info(f'No mask detected: P(mask) = {mask_probability:.2f} | Inference time: {inference_time*1000:.1f}ms')
-                
-        except Exception as e:
-            with result_placeholder:
+                    st.info(f'No mask detected: P(mask) = {mask_probability:.2f} | Inference time: {inference_time:.2f} s')
+                    
+            except Exception as e:
                 st.error(f'Error processing image: {str(e)}')
                 st.error('Please try a different image or check the image format.')
     
     # GitHub repository link at the bottom
-    st.markdown('**GitHub repository:** [face-mask-detection](https://github.com/gperdrizet/face-mask-detection)')
+    st.markdown('**GitHub repository:** [gperdrizet/face-mask-detection](https://github.com/gperdrizet/face-mask-detection)')
 
 
 if __name__ == "__main__":
