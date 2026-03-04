@@ -64,10 +64,6 @@ The app will open in your default browser at `http://localhost:8501`.
 
 1. **Upload an image**: Click "Browse files" to select an image from your computer
 2. **Or use your camera**: Click "Take a photo" to capture an image with your webcam
-3. **View results**: The app will display:
-   - The input image (fixed 600px width)
-   - Mask detection probability
-   - Visual indicator (Mask detected / No mask detected)
 
 ## License
 
